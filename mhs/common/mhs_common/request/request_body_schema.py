@@ -33,7 +33,7 @@ class Attachment:
     content_type: str
     payload: str
     description: str
-
+    document_id: str
 
 class AttachmentSchema(marshmallow.Schema):
     """Schema for an attachment in the request body that MHS accepts"""
@@ -50,10 +50,12 @@ class AttachmentSchema(marshmallow.Schema):
                                      validate=marshmallow.validate.Length(min=1, max=5_000_000))
     description = marshmallow.fields.Str(required=True, description='Description of the attachment',
                                          validate=marshmallow.validate.Length(min=1))
+    document_id = marshmallow.fields.Str(required=False,
+                                         description='The document id of the attachment.')
 
     @marshmallow.post_load
     def make_attachment(self, data, **kwargs):
-        return Attachment(data['is_base64'], data['content_type'], data['payload'], data['description'])
+        return Attachment(data['is_base64'], data['content_type'], data['payload'], data['description'], data.get('document_id') or [])
 
 
 @dataclasses.dataclass
